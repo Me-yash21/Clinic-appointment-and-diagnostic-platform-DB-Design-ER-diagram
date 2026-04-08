@@ -1,0 +1,104 @@
+doctors[icon: doctor, color: Blue]{
+  id serial pk
+  name string 
+  email string unique
+  phone string 
+  speciality int fk
+  year_of_experience int 
+  consultation_fees int 
+  available_from time
+  available_to time
+
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+specialities [icon: superset]{
+  id serial pk
+  speciality string not null
+  detail text
+}
+
+patients[icon: user, color: Orange]{
+  id serial pk
+  name string
+  email string not null
+  phone string not null
+  age int 
+  gender int
+
+  updatedAt timestamp
+  createdAt timestamp
+}
+
+appointments[icon: timer, color: Green]{
+  id serial pk
+  doctorId int fk
+  patientId int fk
+  appointment_date date
+  booking_status enum[pending,booked,cancelled]
+  appointment_status enum[waiting,completed]
+  shift enum[morning, noon, evening]
+  Reason_for_visit text
+
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+consultations[icon: clipboard, color: Orange]{
+  id serial pk
+  appointment_id int fk
+  symptoms text not null
+  prescription text not null
+  prescribed_test int fk
+  
+  consultatedAt timestamp
+}
+
+test_types [icon: test-tube]{
+  id seriak pk
+  test_name string not null
+  desc text
+  test_charges int
+}
+
+diagnostic_tests[icon: table, color: Red]{
+  id serial pk
+  consultation_id int fk
+  patientId int fk
+  test_type int fk
+  report_status enum['in progress','completed']
+}
+
+test_reports[icon:report]{
+  id serial pk
+  diagnostic_test_id int fk
+  report_file_url string 
+
+  createdAt timestamp
+}
+
+payments[icon: rupee, color: Blue]{
+  id serial pk
+  amount decimal
+  appointment_id int fk
+  payment_mode enum[cod,upi,card]
+  payment_status enum[pending,confirm,cancelled]
+
+  paidAt timestamp
+}
+
+doctors.speciality > specialities.id
+appointments.doctorId > doctors.id
+appointments.patientId > patients.id
+
+consultations.appointment_id - appointments.id
+
+consultations.prescribed_test > test_types.id
+diagnostic_tests.consultation_id - consultations.id
+diagnostic_tests.patientId > patients.id
+diagnostic_tests.test_type > test_types.id
+
+test_reports.diagnostic_test_id - diagnostic_tests.id
+payments.appointment_id - appointments.id
+  
